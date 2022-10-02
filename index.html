@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Demo for sign up and sign in</title>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyBxH-Cz3G-dwuWQSTtXYH6VEgQCq0yJr4M",
+    authDomain: "sign-in-and-sign-up-test-bf75d.firebaseapp.com",
+    databaseURL: "https://sign-in-and-sign-up-test-bf75d-default-rtdb.firebaseio.com",
+    projectId: "sign-in-and-sign-up-test-bf75d",
+    storageBucket: "sign-in-and-sign-up-test-bf75d.appspot.com",
+    messagingSenderId: "189112752796",
+    appId: "1:189112752796:web:93e743bed1386b7e046b59"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
+    
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+       <input type="text" id="acc">
+       <input type="text" id="pass">
+       <button onclick="clk()">up</button>
+       <button onclick="clk2()">in</button>
+        <script>
+            var acc1, pass1;
+            var clk1,clk11;
+            var ispre=0;
+            var w1,w2;
+            var database=firebase.database();
+            function clk(){
+                clk1 = 1;
+            }
+            function clk2(){
+                clk11 = 1;
+            }
+            function draw(){
+                if(clk1 === 1){
+                    acc1 = document.getElementById('acc').value;
+                    pass1 = document.getElementById('pass').value;
+                    ispre=0;
+                    var gameStateRef  = database.ref('accounts/'+acc1+'/a');
+                        gameStateRef.on("value",function(data){
+                        ispre = data.val();
+                    });
+                    if(ispre === null){
+                        getLocation();
+                        
+                            database.ref('accounts/'+acc1).update({
+                                pass:pass1,
+                                a:1,
+                                latitude:w1,
+                                longitude:w2,
+                                
+                                Description:platform.description
+                            });
+                            
+                            alert("Account created   id:"+acc1+'    pass : '+pass1);
+                            ispre = 0;
+                            clk1 = 0;
+                    
+                }else if(ispre === 1){
+                    alert("account already there");
+                    ispre = 0;
+                    clk1 = 0;
+                    }
+                }
+                if(clk11 === 1){
+                    acc1 = document.getElementById('acc').value;
+                    pass1 = document.getElementById('pass').value;
+                    ispre=0;
+                    var gameStateRef  = database.ref('accounts/'+acc1);
+                        gameStateRef.on("value",function(data){
+                        ispre = data.val();
+                    });
+                    if(ispre !== null){
+                        var pass2;
+                        var gameStateRef  = database.ref('accounts/'+acc1+'/pass');
+                            gameStateRef.on("value",function(data){
+                            pass2 = data.val();
+                        });
+                        if(pass2 !== undefined){
+
+                        
+                        if(pass1 === pass2){
+                            alert("right pass "+pass2);
+                            clk11 = 0;
+                        }else{
+                            alert("wrong pass "+pass1);
+                            clk11 = 0;
+                        }
+                    }
+                    }else{
+                        alert('account not found');
+                        clk11 = 0;
+                    }
+                }
+            }
+            setInterval(draw,1);
+            var sucess,error;
+            function getLocation() {
+    if (!navigator.geolocation) {
+      //console.log('Geolocation API not supported by this browser.');
+    } else {
+      //console.log('Checking location...');
+      navigator.geolocation.getCurrentPosition(sucess, error);
+    }
+  }
+  function error() {
+    //console.log('Geolocation error!');
+  }
+  function sucess(position) {
+    //console.log('Latitude:', position.coords.latitude);
+    //console.log('Longitude:', position.coords.longitude);
+    w1 = position.coords.latitude
+    w2 = position.coords.longitude
+    //return w1 +', '+w2;
+  }
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/platform/1.3.6/platform.min.js"></script>
+    </body>
+</html>
